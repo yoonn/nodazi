@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybais.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kedu.nodazi.mapper.StockMapper">
+
+	<select id="readRecList"
+			resultType="CodesDto">
+		select R.code
+			 , C.company
+		  from rec_stock R left outer join codes C
+		    on R.code = C.code
+		 where r_recdt = #{today}
+		   and r_seq = #{seq}
+		 limit 1
+	</select>
+	
+	<select id="readRecStock"
+			resultType="PricesDto">
+		select price_date
+			 , price_open
+			 , price_close
+			 , price_high
+			 , price_low
+		  from prices
+		 where code = lpad(cast(#{code} as char), 6, '0')
+		 order by price_date desc
+		 limit #{term}
+	</select>
+	
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 'code'.toString()">
+				and code like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'com'.toString()">
+				and company like CONCAT('%', #{keyword}, '%')
+			</if>
+		</if>
+	</sql>
+	
+	<select id="searchList"
+			resultType="CodesDto">
+		<![CDATA[
+		select *
+		  from codes
+		 where id > 0
+		]]>
+		
+		<include refid="search"></include>
+		
+		 order by id
+		 limit #{pageStart}, #{perPageNum}
+	</select>
+	
+	<select id="searchListCount"
+			resultType="int">
+		<![CDATA[
+		select count(id)
+		  from codes
+		 where id > 0
+		   
+		]]>
+		
+		<include refid="search"></include>
+	</select>
+	
+	<select id="readPricePage"
+			resultType="PricesDto">
+		select *
+		  from prices
+		 where code = #{code}
+		 order by price_date desc
+		 limit #{cri.pageStart}, #{cri.perPageNum}
+	</select>
+	
+	<select id="readPriceCount"
+			resultType="int">
+		select count(id)
+		  from prices
+		 where code = #{code}
+	</select>
+	
+	<select id="readCodesDto"
+			resultType="CodesDto">
+		select *
+		  from codes
+		 where code = #{code}
+		   and market_type = 1
+	</select>
+	
+	<select id="readSHistoryDto"
+			resultType="StockHistoryDto">
+		<![CDATA[
+		select h.price_date		as rec_dt
+			 , l.price_close	as rec_price
+			 , h.price_close	as latest_price
+		     , (l.price_close - h.price_close) / h.price_close as variation
+		from
+		(select price_close
+		   from prices
+		  where code = #{code}
+		  order by price_date desc
+		  limit 1
+		) as l ,
+		(	select price_close
+				 , price_date
+			  from prices a left join
+				(select r_recdt, code
+				  from rec_stock
+				 where code = #{code}) b
+				on a.code = b.code 
+			 where a.price_date = b.r_recdt
+		) as h
+		]]>
+	</select>
+	
+	<select id="readDHistoryDto"
+			resultType="DateHistoryDto">
+		<![CDATA[
+		select h.code			as code
+			 , h.r_recdt		as rec_dt
+		     , h.company		as company
+		     , l.price_close	as latest_close
+		     , h.price_close	as rec_close
+		     , (l.price_close - h.price_close) / h.price_close as variation
+		  from (
+				select r.code
+					 , r.r_recdt
+					 , c.company
+					 , p.price_close
+				  from rec_stock r, codes c, prices p
+				 where r.code = c.code
+				   and r.code = p.code
+				   and r.r_recdt >= #{start}
+		           and r.r_recdt <= #{end}
+				   and c.market_type = 1
+				   and p.price_date >= #{start}
+		           and p.price_date <= #{end}
+		           and r.r_recdt = p.price_date
+			   ) h,
+		       (
+				select price_close
+					 , code
+				  from prices
+				 where price_date = (select max(price_date)
+									   from prices
+									)
+				 order by price_date desc
+		       ) l
+		 where h.code = l.code
+		 order by h.r_recdt
+		]]>
+	</select>
+	
+	<insert id="insertFavor">
+		insert into interest_stock( i_seq
+								  , u_id
+								  , code
+		                          , i_regdt
+		                          )
+						   values ( (select coalesce(max(a.i_seq) + 1, 1)
+									   from interest_stock a
+									)
+								  , #{u_id}
+								  , #{code}
+		                          , curdate()
+		                          )
+	</insert>
+	
+	<delete id="deleteFavor">
+		delete from interest_stock
+		 where u_id = #{u_id}
+		   and code = #{code}
+	</delete>
+	
+	<select id="checkFavor"
+			resultType="string">
+		select code
+		  from interest_stock
+		 where code = #{code}
+		   and u_id = #{u_id}
+	</select>
+	
+	<select id="readFavorDto"
+			resultType="FavorDto">
+		select i.i_seq			seq
+			 , i.code			code
+		     , i.company		company
+		     , i.price_close	int_price
+		     , p.price_close	latest_price
+			 , (i.price_close - p.price_close) / p.price_close	variation
+		  from (
+					select i.i_seq
+						 , i.code
+						 , c.company
+						 , p.price_close
+					  from interest_stock i, codes c, prices p
+					 where i.code = c.code
+					   and i.code = p.code
+					   and i.u_id = #{u_id}
+					   and c.market_type = 1
+					   and p.price_date = i.i_regdt
+					 order by i.i_seq
+			   ) i,
+		       (
+					select code
+						 , price_close
+					  from prices
+					 where price_date = (
+											select max(price_date)
+											  from prices
+										)
+		       ) p
+		 where i.code = p.code
+	</select>
+	
+</mapper>

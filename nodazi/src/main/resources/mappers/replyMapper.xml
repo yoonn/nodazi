@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybais.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kedu.nodazi.mapper.ReplyMapper">
+
+	<select id="list"
+			resultType="com.kedu.nodazi.dto.ReplyDto">
+		select *
+		  from reply
+		 where b_no = #{b_no}
+		 order by r_no desc
+	</select>
+	
+	<insert id="create">
+		insert into reply(b_no
+				, r_no
+				, r_content
+				, u_id
+				, r_regdt)
+		   values(#{b_no}
+				, (
+				   select ifnull(max(a.r_no)+1,0) 
+                	 from reply a
+                	where b_no=#{b_no}
+                  )
+				, #{r_content}
+				, #{u_id}
+				, now())
+	</insert>
+	
+	<update id="update">
+		update reply
+		   set r_content = #{r_content}
+		     , r_updatedt = now()
+		 where r_no = #{r_no}
+		   and b_no = #{b_no}
+	</update>
+	
+	<delete id="delete">
+		delete from reply
+		 where r_no = #{r_no}
+		   and b_no = #{b_no}
+	</delete>
+	
+	<select id="listPage"
+			resultType="com.kedu.nodazi.dto.ReplyDto">
+		select *
+		  from reply
+		 where b_no = #{b_no}
+		 order by r_no desc
+		 limit #{cri.pageStart}, #{cri.perPageNum}
+	</select>
+	
+	<select id="count"
+			resultType="int">
+		select count(b_no)
+		  from reply
+		 where b_no = #{b_no}
+	</select>
+	
+	<select id="getB_no"
+			resultType="int">
+		select b_no
+		  from reply
+		 where r_no = #{r_no}
+	</select>
+	
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace ="com.kedu.nodazi.mapper.UserMapper">
+	<insert id = "regist">
+	insert into user(u_nm
+					,u_id
+					,u_pw
+					,u_email
+					,u_mobile)
+	values			(#{u_nm}
+					,#{u_id}
+					,#{u_pw}
+					,#{u_email}
+					,#{u_mobile})
+	</insert>
+	
+	<select id="login" resultType="com.kedu.nodazi.dto.UserDto">
+	select 	u_id
+			,u_pw
+			,u_nm
+			,u_mgr 
+	from user
+	where u_id = #{u_id} 
+	  and u_pw=#{u_pw}
+	</select>
+	
+	<select id="loginCheck" resultType="String">
+	select u_pw
+	  from user
+	 where u_id = #{u_id}
+	   and u_withdraw = 0
+	</select>
+	
+	<insert id = "payment">
+		insert into payment(u_id
+							,p_seq
+							,p_account
+							,p_dep_nm
+							,p_dep_bank
+							,p_price)
+		values		(#{u_id}
+					,(select coalesce(max(a.p_seq) + 1,1)
+						from payment a
+						where a.u_id = #{u_id})
+					,#{p_account}
+					,#{p_dep_nm}
+					,#{p_dep_bank}
+					,#{p_price})
+	</insert>
+	
+	<select id = "info" resultType="com.kedu.nodazi.dto.UserDto">
+		select 	u_id
+				,u_nm
+				,u_pw
+				,u_email
+				,u_mobile
+				,u_regdt 
+		from user
+		where u_id= #{u_id}
+	</select>
+	
+ 	<select id = "paymentDetail" resultType="com.kedu.nodazi.dto.PaymentDto">
+		select 	u_id
+				,p_seq
+				,p_account
+				,p_dep_nm
+				,p_dep_bank
+				,p_regdt
+				,p_depdt
+				,p_price
+				,p_enddt 
+				from payment
+		where u_id= #{u_id}
+		order by p_seq desc
+	</select> 
+	
+	<update id ="userUpdate">
+		update user set  u_pw = #{u_pw}
+						,u_email = #{u_email}
+						,u_mobile = #{u_mobile}
+						,u_updatedt = now()
+		where u_id = #{u_id}
+	</update>
+	
+	<update id="withdraw">
+		update user set u_withdraw = 1
+						,u_withdrawdt = now()
+		where u_id = #{u_id}
+	</update>
+	
+	<select id="overlap" resultType="String">
+		select u_id
+		from user
+		where u_id = #{u_id}
+	</select>
+	
+	<select id="checkUseService"
+			resultType="Date">
+		<![CDATA[
+		select p_enddt
+		  from payment
+		 where p_depdt <= curdate()
+		   and p_enddt >= curdate()
+		   and u_id = #{u_id}
+		]]>
+	</select>
+	
+</mapper>

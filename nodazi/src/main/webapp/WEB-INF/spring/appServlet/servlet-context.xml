@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- Interceptor -->
+	<beans:bean id="loginInterceptor" class="com.kedu.nodazi.interceptor.LoginInterceptor"/>
+	<beans:bean id="authInterceptor" class="com.kedu.nodazi.interceptor.AuthInterceptor"/>
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/user/loginPost" />
+			<beans:ref bean="loginInterceptor" />
+		</interceptor>
+		<interceptor>
+			<mapping path="/user/payment_detail"/>
+			<mapping path="/user/payment_policy"/>
+			<mapping path="/user/info"/>
+			<mapping path="/user/payment"/>
+			<mapping path="/stock/**"/>
+			<mapping path="/board/**"/>
+			<mapping path="/reply/**"/>
+			<mapping path="/manager/**"/>
+			<beans:ref bean="authInterceptor"/>
+		</interceptor>
+	</interceptors>
+	
+	<annotation-driven />
+
+	<!-- resources mapping -->
+	<!-- <resources mapping="/resources/**" location="/resources/" /> -->
+	<resources mapping="/css/**" location="/resources/css/" />
+	<resources mapping="/js/**" location="/resources/js/" />
+	<resources mapping="/fonts/**" location="/resources/fonts/" />
+	<resources mapping="/font-awesome/**" location="/resources/font-awesome/" />
+	<resources mapping="/img/**" location="/resources/img/" />
+
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<context:component-scan base-package="com.kedu.nodazi.controller" />
+	
+	<beans:bean id="multipartResolver"
+				class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="10485760" />
+	</beans:bean>
+	
+	<beans:bean id="uploadPath"
+				class="java.lang.String">
+		<beans:constructor-arg value="D:\\nodazi\\upload" />
+	</beans:bean>
+	
+</beans:beans>
