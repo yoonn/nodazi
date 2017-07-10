@@ -93,25 +93,27 @@
 	<select id="readSHistoryDto"
 			resultType="StockHistoryDto">
 		<![CDATA[
-		select h.price_date		as rec_dt
-			 , l.price_close	as rec_price
-			 , h.price_close	as latest_price
-		     , (l.price_close - h.price_close) / h.price_close as variation
+		select h.price_date										as rec_dt
+			 , l.price_close									as rec_price
+			 , h.price_close									as latest_price
+		     , (l.price_close - h.price_close) / h.price_close 	as variation
 		from
-		(select price_close
-		   from prices
-		  where code = #{code}
-		  order by price_date desc
-		  limit 1
+		(	select price_close
+		 	  from prices
+		 	 where code = #{code}
+		 	 order by price_date desc
+		 	 limit 1
 		) as l ,
 		(	select price_close
 				 , price_date
-			  from prices a left join
-				(select r_recdt, code
-				  from rec_stock
-				 where code = #{code}) b
-				on a.code = b.code 
-			 where a.price_date = b.r_recdt
+			  from prices a 
+				 , (select r_recdt
+				 		 , code
+				      from rec_stock  
+			   	     where code = #{code}
+				   ) b
+			 where a.code = b.code 
+			   and a.price_date = b.r_recdt
 		) as h
 		]]>
 	</select>

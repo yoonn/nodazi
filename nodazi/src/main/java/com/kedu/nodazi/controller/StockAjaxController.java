@@ -37,9 +37,10 @@ public class StockAjaxController {
 
 	@ResponseBody
 	@RequestMapping(value="/chartAjax", method=RequestMethod.GET)
-	public HashMap<String, Object> chartAjax(@RequestParam int term, @RequestParam String code, Model model) throws Exception{
+	public HashMap<String, Object> chartAjax(@RequestParam int term
+										   , @RequestParam String code
+										   , Model model) throws Exception{
 		
-		logger.info("code : " + code + ", term = " + term);
 		List<PricesDto> recStock = service.readStockPrice(code, term);
 		ChartDto		chart    = new ChartDto(); 
 		
@@ -55,8 +56,10 @@ public class StockAjaxController {
 		SimpleDateFormat sdfRow = new SimpleDateFormat("MM/dd");
 		SimpleDateFormat sdfTool = new SimpleDateFormat("yyyy. MM. dd");
 		
-		for(int row=0; row<recStock.size(); row++){
-			PricesDto dto = recStock.get(row);
+		int recSize = recStock.size();
+		
+		for(int row=0; row<recSize; row++){
+			PricesDto dto = recStock.get(recSize - 1 - row);
 			
 			chart.addCell(row, dto.getPrice_date(), sdfRow.format(dto.getPrice_date()));
 			chart.addCell(row, dto.getPrice_low());
@@ -68,9 +71,6 @@ public class StockAjaxController {
 												+ "\r\n저가 : " + dto.getPrice_low()
 												+ "\r\n고가 : " + dto.getPrice_high());
 		}
-		
-		logger.info("recStock : " + recStock);
-		logger.info("chart.getResult() : " + chart.toString());
 		
 		return chart.getResult();
 		
@@ -101,6 +101,9 @@ public class StockAjaxController {
 		
 		return map;
 	}
+
+	
+//	1이면 insert성공, 0이면 delete 성공
 	
 	@ResponseBody
 	@RequestMapping(value="favorStock", method = RequestMethod.GET)
@@ -108,14 +111,8 @@ public class StockAjaxController {
 						, @RequestParam String code
 						, HttpSession session) throws Exception{
 		
-//		1이면 insert성공, 0이면 delete 성공
-		
 		UserDto uDto = (UserDto) session.getAttribute("login");
 		String u_id  = uDto.getU_id();
-		
-//		String u_id = "aaaa";
-		
-		logger.info("status = 0 : " + status);
 		
 		if(status == 1){
 			service.unRegFavor(code, u_id);
@@ -123,10 +120,8 @@ public class StockAjaxController {
 		}else if(status == 0){
 			service.regFavor(code, u_id);
 			status = 1;
-			logger.info("status == 0 -> 1 : " + status);
 		}
 		
-		logger.info("return status : " + status);
 		return status;
 	}
 	
@@ -142,7 +137,6 @@ public class StockAjaxController {
 		int endNum = Integer.parseInt(end);
 		
 		logger.info("String : start = " + start + ", end = " + end);
-		
 		
 		logger.info("int : start = " + start + ", end = " + end);
 		

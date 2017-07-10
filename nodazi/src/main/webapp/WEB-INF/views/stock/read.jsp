@@ -92,8 +92,6 @@ $(function(){
 			, async : false
 		}).responseText;
 		
-		/* console.info(chartData) */
-		
 		var data = new google.visualization.DataTable(chartData, true);
 		
 		var options = {
@@ -287,7 +285,7 @@ $(function(){
 							</c:if>
 							<c:if test="${checkFavor == '0'}">
 								<button type="button" class="btn btn-default btn-circle" id="favor">
-									<i class="fa fa-star-o star"></i>
+									<i class="fa fa-star"></i>
 								</button>
 							</c:if>
 						</h1>
@@ -341,20 +339,17 @@ $(function(){
 												<fmt:formatDate value="${history.rec_dt }" pattern="yyyy. MM. dd"/>
 												&nbsp;&nbsp;
 												<fmt:formatNumber value="${history.latest_price }" type="currency"/>
-												<span class="badge">
+												<span class="pull-right">
 													<c:if test="${history.variation > 0}">
-														<i class="fa fa-chevron-circle-up"></i>
-														&nbsp;
+														<i class='fa fa-chevron-circle-up' style='color: #d9534f;'></i>
 														<fmt:formatNumber value="${history.variation}" type="percent"/>
 													</c:if>
 													<c:if test="${history.variation < 0}">
-														<i class="fa fa-chevron-circle-down"></i>
-														&nbsp;
+														<i class='fa fa-chevron-circle-down' style='color: #337ab7;'></i>
 														<fmt:formatNumber value="${history.variation}" type="percent"/>
 													</c:if>
 													<c:if test="${history.variation == 0}">
-														<i class="mega-octicon octicon-dash"></i>
-														&nbsp;
+														<i class='fa fa-minus-circle' style='color: #cccccc;'></i>
 														<fmt:formatNumber value="${history.variation}" type="percent"/>
 													</c:if>
 												</span>
