@@ -9,9 +9,9 @@
 			resultType="CodesDto">
 		select R.code
 			 , C.company
-		  from rec_stock R left outer join codes C
-		    on R.code = C.code
-		 where r_recdt = #{today}
+		  from rec_stock R, codes C
+		 where lpad(cast(R.code as char), 6, '0') = C.code
+		   and r_recdt = #{today}
 		   and r_seq = #{seq}
 		 limit 1
 	</select>

@@ -26,6 +26,9 @@ public class CodesDto {
 		return code;
 	}
 	public void setCode(String code) {
+		for(int length=code.length(); length<6; length++){
+			code = "0" + code;
+		}
 		this.code = code;
 	}
 	public String getFull_code() {
