@@ -71,10 +71,6 @@
 									<label for="exampleInputEmail1">작성자</label> 
 									<input type="text" name="u_id" class="form-control" value="${login.u_id }" readonly>
 								</div>
-								<div class="form-group">
-									<label for="exampleInputEmail1">File DROP Here</label>
-									<div class="fileDrop"></div>
-								</div>
 							</div>
 							<ul class="mailbox-attachments clearfix uploadedList"></ul>
 							<button type="submit" class="btn btn-primary">저장</button>
@@ -124,35 +120,6 @@ $(".fileDrop").on("dragenter dragover", function(event){
 	event.preventDefault();
 });
 
-$(".fileDrop").on("drop", function(event){
-	event.preventDefault();
-	
-	var files = event.originalEvent.dataTransfer.files;
-	
-	var file = files[0];
-
-	var formData = new FormData();
-	
-	formData.append("file", file);
-	
-	$.ajax({
-		  url: '/uploadAjax',
-		  data: formData,
-		  dataType:'text',
-		  processData: false,
-		  contentType: false,
-		  type: 'POST',
-		  success: function(data){
-			  
-			  var fileInfo = getFileInfo(data);
-			  
-			  var html = template(fileInfo);
-			  
-			  $(".uploadedList").append(html);
-		  }
-	});	
-});
-
 $("#registerForm").submit(function(event){
 	event.preventDefault();
 	
@@ -185,13 +152,4 @@ $(".btn-primary").on("click", function(){
 
 </script>
 
-<style>
-.fileDrop {
-  width: 80%;
-  height: 100px;
-  border: 1px dotted gray;
-  background-color: lightslategrey;
-  margin: auto;
-}
-</style>
 </html>

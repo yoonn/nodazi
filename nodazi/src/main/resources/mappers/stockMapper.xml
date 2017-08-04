@@ -188,6 +188,7 @@
 	<select id="readFavorDto"
 			resultType="FavorDto">
 		select i.i_seq			seq
+			 , i.i_regdt		regdt
 			 , i.code			code
 		     , i.company		company
 		     , i.price_close	int_price
@@ -196,6 +197,7 @@
 		  from (
 					select i.i_seq
 						 , i.code
+						 , i.i_regdt
 						 , c.company
 						 , p.price_close
 					  from interest_stock i, codes c, prices p
@@ -216,6 +218,7 @@
 										)
 		       ) p
 		 where i.code = p.code
+		 order by i.i_seq asc
 	</select>
 	
 </mapper>

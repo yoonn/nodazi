@@ -100,7 +100,7 @@
 									<tr id="paymentCol">
 										<th class="col-lg-0"></th>
 										<th class="text-center">id</th>
-										<th class="text-center">결제 수</th>
+										<th class="text-center">no</th>
 										<th class="text-center">입금액</th>
 										<th class="text-center">입금은행</th>
 										<th class="text-center">입금주</th>
@@ -339,8 +339,6 @@ $(document).ready(function(){
 				})
 				, timeout	:"30000"
 				, success	:function(list){
-					console.log("list "+ list);
-					
 					var template = Handlebars.compile($("#template").html());
 					var html = template(list);
 					$("#paymentCol").nextAll().remove();

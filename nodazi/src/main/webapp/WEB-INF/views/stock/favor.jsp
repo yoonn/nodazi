@@ -73,7 +73,7 @@ $(function(){
 				<div class="row">
 					<div class="col-lg-10">
 						<h1 class="page-header">
-							선호종목 <small>favor</small>
+							관심종목 <small>favor</small>
 						</h1>
 						<ol class="breadcrumb">
 							<li class="active"><i class="fa fa-dashboard"></i> Dashboard
@@ -91,6 +91,7 @@ $(function(){
 								<thead>
 									<tr>
 										<th class="text-center">no</th>
+										<th class="text-center">등록일</th>
 										<th class="text-center">종목명</th>
 										<th class="text-center">최근종가</th>
 										<th class="text-center">증감율</th>
@@ -101,6 +102,7 @@ $(function(){
 									<c:forEach items="${favor }" var="favorDto">
 										<tr>
 											<td>${favorDto.seq }</td>
+											<td><fmt:formatDate value="${favorDto.regdt }"/></td>
 											<td>${favorDto.company }</td>
 											<td>
 												<fmt:formatNumber value="${favorDto.latest_price }" type="currency"/>
@@ -110,10 +112,10 @@ $(function(){
 													<i class='fa fa-chevron-circle-up' style='color: #d9534f;'></i>
 												</c:if>
 												<c:if test="${favorDto.variation < 0}">
-													<i class='fa fa-chevron-circle-up' style='color: #337ab7;'></i>
+													<i class='fa fa-chevron-circle-down' style='color: #337ab7;'></i>
 												</c:if>
 												<c:if test="${favorDto.variation == 0}">
-													<i class='fa fa-chevron-circle-up'></i>
+													<i class='fa fa-chevron-circle'></i>
 												</c:if>
 												<fmt:formatNumber value="${favorDto.variation}" type="percent"/>
 											</td>

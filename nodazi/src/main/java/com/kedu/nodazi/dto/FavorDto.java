@@ -1,5 +1,7 @@
 package com.kedu.nodazi.dto;
 
+import java.util.Date;
+
 public class FavorDto {
 	
 	private Integer	seq;
@@ -8,8 +10,15 @@ public class FavorDto {
 	private	Integer	int_price;
 	private	Integer	latest_price;
 	private double	variation;
+	private Date	regdt;
 
 	
+	public Date getRegdt() {
+		return regdt;
+	}
+	public void setRegdt(Date regdt) {
+		this.regdt = regdt;
+	}
 	public Integer getSeq() {
 		return seq;
 	}
@@ -51,9 +60,8 @@ public class FavorDto {
 	@Override
 	public String toString() {
 		return "FavorDto [seq=" + seq + ", code=" + code + ", company=" + company + ", int_price=" + int_price
-				+ ", latest_price=" + latest_price + ", variation=" + variation + "]";
+				+ ", latest_price=" + latest_price + ", variation=" + variation + ", regdt=" + regdt + "]";
 	}
-
 	
 	
 }

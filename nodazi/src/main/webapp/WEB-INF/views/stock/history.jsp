@@ -58,15 +58,7 @@
 
 <script type="text/javascript">
 $(function(){
-	
-	/* var start = $("#start").html();
-	var end   = document.getElementById("end").value;
-	
-	var test = $("#test").val(); */
-	
-	/* var start = $("input").find('inpur[name=start]').val();
-	var end   = $("input").find('inpur[name=end]').val(); */
-	
+
 	/* Handlebars 날짜 포맷 start */
 	Handlebars.registerHelper("prettifyDate", function(timeValue){
 		var dateObj = new Date(timeValue);

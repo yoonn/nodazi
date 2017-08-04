@@ -114,8 +114,6 @@ public class StockController {
 		UserDto uDto = (UserDto) session.getAttribute("login");
 		String u_id  = uDto.getU_id();
 		
-//		String u_id = "aaaa";
-		
 		List<FavorDto> favor = service.readFavorDto(u_id);
 		
 		model.addAttribute("favor", favor);
